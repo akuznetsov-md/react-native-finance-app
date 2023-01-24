@@ -19,14 +19,11 @@ type TransactionListItem =
 
 export const TransactionListScreen: FC<AppStackScreenProps<"TransactionList">> = observer(
   function TransactionListScreen(props) {
-    // Pull in one of our MST stores
-    // const { someStore, anotherStore } = useStores()
-
-    // Pull in navigation via hook
+    
     const { route } = props
 
     const [transactions, setTransactions] = useState<TransactionDTO[]>([])
-
+    const [isLoading, setIsLoading] = useState(false)
     const fetchTransactions = async (accountId: AccountDTO["id"]) => {
       const { data = [] } = await api.getTransactions(accountId, {
         offset: transactions.length,
@@ -34,6 +31,7 @@ export const TransactionListScreen: FC<AppStackScreenProps<"TransactionList">> =
       })
 
       setTransactions([...transactions, ...data])
+      setIsLoading(false)
     }
 
     useEffect(() => {
@@ -75,6 +73,7 @@ export const TransactionListScreen: FC<AppStackScreenProps<"TransactionList">> =
             console.log("onEndReached")
             fetchTransactions(route.params.accountId)
           }}
+          refreshing={isLoading}
         />
       </Screen>
     )
